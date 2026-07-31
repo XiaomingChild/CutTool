@@ -1,12 +1,18 @@
 import { app, globalShortcut, ipcMain, Menu, Tray, nativeImage } from 'electron'
 import * as path from 'path'
-import { createWindow, getWindow, hideWindow, setPinned, getPinned, toggleWindow } from './window'
+import {
+  createWindow,
+  getWindow,
+  minimizeWindow,
+  setPinned,
+  getPinned,
+  toggleWindow
+} from './window'
 import {
   initStore,
   getClips,
   getClipById,
   getClipCounts,
-  deleteClip,
   clearClips,
   getConfig,
   setConfig,
@@ -28,11 +34,6 @@ if (!gotLock) {
   // 再次启动时唤起主窗口
   app.on('second-instance', () => toggleWindow())
 
-  // 真正退出时标记，供窗口 close 拦截判断
-  app.on('before-quit', () => {
-    ;(app as any).isQuitting = true
-  })
-
   app.whenReady().then(() => {
     // 初始化文件存储
     initStore()
@@ -40,13 +41,13 @@ if (!gotLock) {
     // 注册 clip-image 协议，供渲染进程展示本地图片
     registerImageProtocol(getImagesDir())
 
-    // 主窗口（无边框悬浮小窗，默认隐藏）
+    // 主窗口（无边框工具窗口）
     createWindow()
 
     // 系统托盘（常驻后台的唯一入口）
     createTray()
 
-    // 全局快捷键 Ctrl+Shift+V 唤起/隐藏悬浮窗
+    // 全局快捷键 Ctrl+Shift+V 唤起并聚焦窗口
     const registered = globalShortcut.register('CommandOrControl+Shift+V', () => toggleWindow())
     if (!registered) {
       tray?.setToolTip('CutTool：Ctrl+Shift+V 注册失败，可能被其他软件占用')
@@ -60,12 +61,8 @@ if (!gotLock) {
     // 开机自启按配置恢复
     app.setLoginItemSettings({ openAtLogin: getConfig().autostart })
 
-    // 开机自启启动时不弹窗
-    const startHidden =
-      process.argv.includes('--hidden') || app.getLoginItemSettings().wasOpenedAtLogin
-    if (!startHidden) {
-      toggleWindow()
-    }
+    // 启动后直接显示窗口，不使用后台隐藏状态
+    toggleWindow()
   })
 
   // 创建托盘菜单
@@ -91,10 +88,6 @@ if (!gotLock) {
     return getClips(query.type, query.offset, query.limit, query.keyword)
   })
   ipcMain.handle('clips:counts', () => getClipCounts())
-  ipcMain.handle('clips:delete', (_event, id: number) => {
-    deleteClip(id)
-    return true
-  })
   ipcMain.handle('clips:clear', (_event, type) => {
     clearClips(type)
     return getClipCounts()
@@ -109,11 +102,12 @@ if (!gotLock) {
     const config = setConfig(partial)
     // 开机自启改动立即应用到系统
     if (partial.autostart !== undefined) {
-      app.setLoginItemSettings({ openAtLogin: config.autostart, args: ['--hidden'] })
+      app.setLoginItemSettings({ openAtLogin: config.autostart })
     }
     return config
   })
-  ipcMain.handle('window:hide', () => hideWindow())
+  ipcMain.handle('window:minimize', () => minimizeWindow())
+  ipcMain.handle('app:quit', () => app.quit())
   ipcMain.handle('window:setPinned', (_event, pinned: boolean) => {
     setPinned(pinned)
     return pinned

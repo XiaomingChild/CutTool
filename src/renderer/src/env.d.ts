@@ -33,12 +33,12 @@ interface Window {
   cutTool: {
     getClips: (query: ClipQuery) => Promise<Clip[]>
     getClipCounts: () => Promise<ClipCounts>
-    deleteClip: (id: number) => Promise<boolean>
     clearType: (type: Clip['type']) => Promise<ClipCounts>
     copyClip: (id: number) => Promise<boolean>
     getConfig: () => Promise<Settings>
     setConfig: (partial: Partial<Settings>) => Promise<Settings>
-    hideWindow: () => Promise<void>
+    minimizeWindow: () => Promise<void>
+    quitApp: () => Promise<void>
     setPinned: (pinned: boolean) => Promise<boolean>
     getPinned: () => Promise<boolean>
     onClipsUpdated: (callback: () => void) => () => void

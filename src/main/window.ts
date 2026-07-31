@@ -1,10 +1,10 @@
-import { BrowserWindow, app, screen } from 'electron'
+import { BrowserWindow, screen } from 'electron'
 import * as path from 'path'
 
 let win: BrowserWindow | null = null
 let pinned = false
 
-// 创建无边框悬浮小窗（默认隐藏，常驻托盘）
+// 创建无边框工具窗口
 export function createWindow(): BrowserWindow {
   win = new BrowserWindow({
     width: 400,
@@ -14,8 +14,8 @@ export function createWindow(): BrowserWindow {
     resizable: false,
     fullscreenable: false,
     maximizable: false,
-    minimizable: false,
-    skipTaskbar: true,
+    minimizable: true,
+    skipTaskbar: false,
     backgroundColor: '#16171c',
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
@@ -32,19 +32,6 @@ export function createWindow(): BrowserWindow {
     win.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 
-  // 未固定时，失焦自动隐藏
-  win.on('blur', () => {
-    if (!pinned) hideWindow()
-  })
-
-  // 点关闭一律隐藏到托盘，不退出应用
-  win.on('close', (event) => {
-    if (!(app as any).isQuitting) {
-      event.preventDefault()
-      hideWindow()
-    }
-  })
-
   return win
 }
 
@@ -52,23 +39,21 @@ export function getWindow(): BrowserWindow | null {
   return win
 }
 
-// 唤起/隐藏悬浮窗（全局快捷键与托盘调用）
+// 唤起并聚焦窗口，全局快捷键不会再次隐藏窗口
 export function toggleWindow() {
   if (!win) return
-  if (win.isVisible() && win.isFocused()) {
-    hideWindow()
-    return
-  }
-  positionNearCursor()
+  if (win.isMinimized()) win.restore()
+  if (!win.isVisible()) positionNearCursor()
   win.show()
   win.focus()
 }
 
-export function hideWindow() {
-  win?.hide()
+// 正常最小化窗口，并在任务栏保留恢复入口
+export function minimizeWindow() {
+  win?.minimize()
 }
 
-// 固定窗口：置顶 + 失焦不隐藏
+// 固定窗口只控制是否始终置顶
 export function setPinned(value: boolean) {
   pinned = value
   win?.setAlwaysOnTop(value, 'floating')

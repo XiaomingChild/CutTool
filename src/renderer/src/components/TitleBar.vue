@@ -9,12 +9,17 @@ onMounted(async () => {
   pinned.value = await window.cutTool.getPinned()
 })
 
-// 隐藏到托盘
-function hide() {
-  window.cutTool.hideWindow()
+// 关闭窗口并退出整个应用进程
+function quit() {
+  window.cutTool.quitApp()
 }
 
-// 切换固定：置顶 + 失焦不隐藏
+// 最小化到任务栏
+function minimize() {
+  window.cutTool.minimizeWindow()
+}
+
+// 切换窗口置顶状态
 async function togglePin() {
   pinned.value = await window.cutTool.setPinned(!pinned.value)
 }
@@ -55,7 +60,20 @@ async function togglePin() {
           <circle cx="15" cy="16" r="2.5" />
         </svg>
       </button>
-      <button class="btn close" title="隐藏" @click="hide">
+      <button class="btn" title="最小化" @click="minimize">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <line x1="5" y1="17" x2="19" y2="17" />
+        </svg>
+      </button>
+      <button class="btn close" title="退出程序" @click="quit">
         <svg
           width="14"
           height="14"
@@ -104,6 +122,7 @@ async function togglePin() {
   background: none;
   color: var(--text-2);
   cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 .btn:hover {
   background: var(--panel);
@@ -111,6 +130,13 @@ async function togglePin() {
 }
 .btn.active {
   color: var(--accent);
+}
+.btn:active {
+  transform: scale(0.9);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 .btn.close:hover {
   background: var(--danger);

@@ -103,15 +103,6 @@ export function appendClip(clip: Clip) {
   rewriteClipsFile()
 }
 
-// 删除单条记录（图片一并删除磁盘文件）
-export function deleteClip(id: number) {
-  const index = clips.findIndex((c) => c.id === id)
-  if (index === -1) return
-  removeImageFile(clips[index])
-  clips.splice(index, 1)
-  rewriteClipsFile()
-}
-
 // 清空全部记录
 export function clearClips(type: Clip['type']) {
   const removed = clips.filter((clip) => clip.type === type)

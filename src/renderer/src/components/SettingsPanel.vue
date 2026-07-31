@@ -81,6 +81,7 @@ async function update(patch: Partial<Settings>) {
   background: var(--panel);
   border-radius: 8px;
   padding: 12px 14px;
+  animation: panel-enter 0.18s ease-out;
 }
 .head {
   display: flex;
@@ -132,6 +133,9 @@ async function update(patch: Partial<Settings>) {
   transition: background 0.15s;
   flex-shrink: 0;
 }
+.switch:active {
+  transform: scale(0.95);
+}
 .switch.on {
   background: var(--accent);
 }
@@ -156,5 +160,10 @@ async function update(patch: Partial<Settings>) {
   gap: 3px;
   font-size: 12px;
   color: var(--text-2);
+}
+
+@keyframes panel-enter {
+  from { opacity: 0; transform: scale(0.98) translateY(3px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 </style>
