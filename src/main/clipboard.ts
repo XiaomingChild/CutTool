@@ -8,7 +8,11 @@ let lastFingerprint = ''
 // 开始轮询剪贴板，内容变化时回调通知前端
 export function startClipboardWatcher(onClip: () => void) {
   setInterval(() => {
-    pollOnce(onClip)
+    try {
+      pollOnce(onClip)
+    } catch {
+      // 其他软件短暂占用剪贴板时等待下一轮读取
+    }
   }, 500)
 }
 

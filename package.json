@@ -1,6 +1,6 @@
 {
   "name": "cuttool",
-  "version": "0.1.0",
+  "version": "1.1.1",
   "description": "简约剪贴板历史管理器：全局监听、快捷键唤起、本地文件存储",
   "main": "./out/main/index.js",
   "private": true,
@@ -15,6 +15,7 @@
     "@types/node": "^22.9.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "electron": "^33.2.1",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^2.3.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
@@ -23,6 +24,7 @@
   "build": {
     "appId": "com.xst.cuttool",
     "productName": "CutTool",
+    "compression": "store",
     "directories": {
       "output": "dist"
     },
@@ -33,14 +35,10 @@
     "icon": "resources/icon.png",
     "win": {
       "target": [
-        "nsis"
+        "portable",
+        "zip"
       ],
       "icon": "resources/icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
     }
   }
 }

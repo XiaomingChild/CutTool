@@ -37,11 +37,13 @@ onMounted(async () => {
   await resetType('text')
   unsubscribe = window.cutTool.onClipsUpdated(handleClipsUpdated)
   window.addEventListener('keydown', handleWindowKeydown)
+  window.addEventListener('focus', handleWindowFocus)
 })
 
 onUnmounted(() => {
   unsubscribe?.()
   window.removeEventListener('keydown', handleWindowKeydown)
+  window.removeEventListener('focus', handleWindowFocus)
   if (searchTimer) clearTimeout(searchTimer)
   if (clearTimer) clearTimeout(clearTimer)
   if (copyTimer) clearTimeout(copyTimer)
@@ -119,6 +121,12 @@ async function handleClipsUpdated() {
   await resetType(activeType.value)
   const currentFirstId = records[activeType.value][0]?.id
   if (currentFirstId && currentFirstId !== previousFirstId) showRecentFeedback(currentFirstId)
+}
+
+// 窗口从其他软件切回时主动同步后台记录
+async function handleWindowFocus() {
+  await refreshCounts()
+  await resetType(activeType.value)
 }
 
 // 点击复制按钮后写回系统剪贴板，并保持当前窗口显示
