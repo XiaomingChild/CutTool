@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #16171c;
+  --panel: #1e1f26;
+  --panel-2: #23242c;
+  --text: #e8e9ed;
+  --text-2: #9a9caa;
+  --accent: #6c8cff;
+  --danger: #ff6b6b;
+  --border: #2a2b33;
+  --radius: 10px;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  user-select: none;
+  overflow: hidden;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #33353f;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #41434f;
+}
+
+input {
+  user-select: text;
+}
